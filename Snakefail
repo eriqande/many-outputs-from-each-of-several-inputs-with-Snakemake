@@ -1,0 +1,91 @@
+
+import pandas as pd
+
+
+
+
+
+# read in the samples.csv file
+samples = pd.read_csv("samples.csv").set_index("sample")
+
+
+# One way to solve this is to let the process_radtags-like
+# rule create a flag file to say that it has completed on each
+# particular library/file of multiple individuals.  This flag will
+# include the library wildcard value (like L01).
+
+# Then we have an intermediate "collector" rule that has
+# all the extracted files as output, and all of the flag
+# files as input.
+
+# then a requuest from the user or any later rule for
+# a file like "extracted/s01.fq.gz" will trigger the exraction of
+# all the samples from all the aggregated files, but each aggregated
+# file will still be run through the extract_samples rule as a
+# separate process.
+
+
+# from samples, make a data frame of the distinct libraries so
+# we can get the infile locations for them
+libs = samples[["lib", "infile"]].drop_duplicates().set_index("lib")
+
+
+def infile_from_lib(wildcards):
+	return libs.loc[wildcards.lib, "infile"]
+
+
+def flag_from_sample(wildcards):
+	return r"results/flags/lib-flag-{lib}".format(lib = samples.loc[wildcards.sample, "lib"])
+
+
+# rule all here is just requesting the variants of everyone
+rule all:
+	input:
+		"results/vcf/everyone.vcf"
+
+
+
+# This is the rule which is like process_radtags.  We pretend that
+# its only output is a "flag file" that says whether or not it was
+# successfully run
+rule extract_samples:
+	input:
+		infile_from_lib
+	output:
+		flag = "results/flags/lib-flag-{lib}"
+	shell:
+		"mkdir -p results/extracted; for i in $(cat {input}); do echo $i > results/extracted/$i; done; "
+		" touch {output.flag}"
+
+
+# now, we have another rule that says that all of the
+# extracted files depend on all of the flag files.
+rule collector:
+	input: expand("results/flags/lib-flag-{L}", L = list(libs.index))
+	output: expand("results/extracted/{S}.fq.gz", S = list(samples.index))
+	shell:
+		"for i in {output}; do [ -e $i ] && touch $i; done "
+
+
+# then you can carry on with rules that request the extracted files as
+# input.  When any such rule requests any extracted file, it will trigger
+# evaluations of the appropriate instance of the exract_samples rule.
+rule map_extracted_reads:
+	input:
+		fq = "results/extracted/{sample}.fq.gz",
+	output:
+		"results/mapped/{sample}.bam"
+	shell:
+		"echo {input.fq} > {output}"
+
+
+# then, if there were a variant-calling step, it would request all of the
+# bams as input
+rule variants:
+	input: 
+		expand("results/mapped/{S}.bam", S = list(samples.index))
+	output:
+		"results/vcf/everyone.vcf"
+	shell:
+		"echo {input} > {output}"
+

@@ -1,0 +1,11 @@
+﻿sample,infile,lib
+s01,data/A.dat,L01
+s02,data/A.dat,L01
+s03,data/A.dat,L01
+s04,data/A.dat,L01
+s05,data/B.dat,L02
+s06,data/B.dat,L02
+s07,data/B.dat,L02
+s08,data/C.dat,L03
+s09,data/C.dat,L03
+s10,data/C.dat,L03
