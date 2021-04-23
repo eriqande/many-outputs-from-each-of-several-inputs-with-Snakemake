@@ -1,8 +1,6 @@
 ---
 title: "Writing a Snakemake workflow for demultiplexing steps: many-outputs-from-each-of-several-inputs"
-output: 
-  github_document:
-    dev: svg
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -134,5 +132,5 @@ within the contents of the file).
 
 It all seems to work.  The DAG for the workflow appears here:
 ```{r, echo=FALSE}
-knitr::include_graphics("figs/dag.svg")
+knitr::include_graphics("figs/dag.png")
 ```
