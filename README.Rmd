@@ -1,6 +1,8 @@
 ---
 title: "Writing a Snakemake workflow for demultiplexing steps: many-outputs-from-each-of-several-inputs"
-output: github_document
+output: 
+  github_document:
+    dev: svg
 ---
 
 ```{r setup, include=FALSE}
