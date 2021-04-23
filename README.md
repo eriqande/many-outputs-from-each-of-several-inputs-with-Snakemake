@@ -189,4 +189,4 @@ output files that are not named anywhere on the command line (other than
 within the contents of the file).
 
 It all seems to work. The DAG for the workflow appears here:
-<img src="figs/dag.png" width="1733" />
+![](figs/dag.svg)<!-- -->

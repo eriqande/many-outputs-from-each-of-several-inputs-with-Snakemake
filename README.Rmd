@@ -132,5 +132,5 @@ within the contents of the file).
 
 It all seems to work.  The DAG for the workflow appears here:
 ```{r, echo=FALSE}
-knitr::include_graphics("figs/dag.png")
+knitr::include_graphics("figs/dag.svg")
 ```
