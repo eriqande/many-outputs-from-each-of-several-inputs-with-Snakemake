@@ -5,4 +5,4 @@
 data-determined-demultiplexing-rules.smk
 results
 .snakemake
-dag.*
+
